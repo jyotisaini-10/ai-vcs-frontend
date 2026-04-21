@@ -25,6 +25,7 @@ import SearchPage from './pages/SearchPage'
 import NewRepo from './pages/NewRepo'
 import RepoSetup from './pages/RepoSetup'
 import Profile from './pages/Profile'
+import ExplorePage from './pages/ExplorePage'
 
 function PrivateRoute({ children }) {
   const { token, loading } = useAuthStore()
@@ -67,6 +68,7 @@ export default function App() {
         <Route path="/codespaces" element={<PrivateRoute><Codespaces /></PrivateRoute>} />
         <Route path="/copilot" element={<PrivateRoute><Copilot /></PrivateRoute>} />
         <Route path="/repo/:id/commit/:sha" element={<PrivateRoute><CommitDetail /></PrivateRoute>} />
+        <Route path="/explore" element={<PrivateRoute><ExplorePage /></PrivateRoute>} />
         <Route path="/repo/:id/search" element={<PrivateRoute><SearchPage /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

@@ -242,7 +242,21 @@ const handleDiscussionsClick = () => {
         <div className="navbar-links">
           {user && (
             <>
-              <div ref={dropRef} style={{ position: 'relative' }}>
+              <div ref={dropRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 8 }}>
+                {/* Global Search Button */}
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => navigate('/explore')}
+                  title="Search users & repositories"
+                  style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 6, borderRadius: 6 }}>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <circle cx="6" cy="6" r="4" stroke="currentColor" strokeWidth="1.4"/>
+                    <path d="M9.5 9.5L13 13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                  </svg>
+                  <span style={{ fontSize: 13 }}>Search</span>
+                </button>
+
+                {/* + New dropdown */}
                 <button className="btn btn-primary btn-sm"
                   style={{ borderRadius: '6px', padding: '6px 10px', gap: 6 }}
                   onClick={() => setDropOpen(!dropOpen)}>

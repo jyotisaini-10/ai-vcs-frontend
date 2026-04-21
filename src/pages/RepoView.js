@@ -5,7 +5,9 @@ import toast from 'react-hot-toast'
 import Navbar from '../components/ui/Navbar'
 import { getRepo, getCommits, pushCommit, getFileContent } from '../api'
 
-const SOCKET_URL = 'https://ai-vcs-backend.vercel.app'
+const SOCKET_URL = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:5000'
+  : 'https://ai-vcs-backend.vercel.app'
 
 export default function RepoView() {
   const { id } = useParams()

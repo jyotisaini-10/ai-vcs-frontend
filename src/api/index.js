@@ -1,7 +1,11 @@
 import axios from 'axios'
 
+const BASE_URL = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:5000/api'
+  : 'https://ai-vcs-backend.vercel.app/api'
+
 const api = axios.create({
-  baseURL: 'https://ai-vcs-backend.vercel.app/api'
+  baseURL: BASE_URL
 })
 
 api.interceptors.request.use((config) => {
@@ -44,6 +48,10 @@ export const resolveConflict = (repoId, data) => api.post(`/repos/${repoId}/reso
 
 // Search
 export const searchCode = (repoId, query) => api.post(`/repos/${repoId}/search`, { query })
+
+// Explore (global user + repo search)
+export const exploreSearch = (params) => api.get('/explore', { params })
+export const getUserProfile = (username) => api.get(`/explore/user/${username}`)
 
 // Issues
 export const getIssues = (repoId, params) => api.get(`/repos/${repoId}/issues`, { params })
