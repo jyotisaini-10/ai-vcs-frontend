@@ -348,7 +348,7 @@ export default function ExplorePage() {
                     {allUsers.length > 4 && <button className="btn btn-sm" onClick={() => handleTabChange('users')}>View all</button>}
                   </div>
                 )}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: 12 }}>
+                <div className="explore-users-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: 12 }}>
                   {(tab === 'all' ? allUsers.slice(0, 4) : allUsers).map(user => (
                     <div key={user._id} className="card" style={{ padding: '18px', cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s' }}
                       onClick={() => setSelectedUser(user.username)}

@@ -107,9 +107,9 @@ function SettingsModal({ user, onClose, onSave }) {
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text2)', cursor: 'pointer', fontSize: 22, lineHeight: 1 }}>×</button>
         </div>
 
-        <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        <div className="settings-body" style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
           {/* Sidebar tabs */}
-          <div style={{ width: 180, borderRight: '1px solid var(--border)', padding: '12px 8px', flexShrink: 0, overflowY: 'auto' }}>
+          <div className="settings-sidebar-col" style={{ width: 180, borderRight: '1px solid var(--border)', padding: '12px 8px', flexShrink: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
             {tabs.map(t => (
               <button key={t.id} onClick={() => setTab(t.id)} style={{
                 width: '100%', textAlign: 'left', padding: '9px 12px', borderRadius: 8,
@@ -523,12 +523,12 @@ export default function Profile() {
         />
       )}
 
-      <div style={{
+      <div className="profile-grid-cols" style={{
         maxWidth: 1100, margin: '0 auto', padding: '32px 20px',
         display: 'grid', gridTemplateColumns: '260px 1fr', gap: 32
       }}>
         {/* Left */}
-        <div>
+        <div className="profile-left-col">
           <div style={{
             width: '100%', aspectRatio: '1', maxWidth: 220,
             borderRadius: '50%', background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 60%, #4c1d95 100%)',
@@ -608,7 +608,7 @@ export default function Profile() {
         {/* Right */}
         <div>
           {/* Action buttons row — like GitHub's profile header */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+          <div className="profile-action-row" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8, marginBottom: 20 }}>
             {/* Share Profile */}
             <button className="btn btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}
               onClick={() => {
@@ -634,7 +634,7 @@ export default function Profile() {
             </button>
           </div>
 
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
+          <div className="stat-row" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
             <StatCard value={repos.length} label="Repositories" />
             <StatCard value={totalCommits} label="Commits" color="var(--accent2)" />
             <StatCard value={followers.length} label="Followers" color="var(--accent)" onClick={() => setFollowModal('followers')} />

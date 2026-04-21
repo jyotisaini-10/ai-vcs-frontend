@@ -143,9 +143,10 @@ pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
 .sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 16px; }
 .main-content { padding: 24px; overflow-x: hidden; }
 
-/* Tab bar */
-.tabs { display:flex; border-bottom:1px solid var(--border); margin-bottom:20px; gap:4px; }
-.tab { padding:8px 16px; font-size:13px; cursor:pointer; border:none; border-bottom:2px solid transparent; background:var(--bg2); color:var(--text2); transition:all 0.15s; border-radius: 6px 6px 0 0; }
+/* Tab bar — scrollable on small screens */
+.tabs { display:flex; border-bottom:1px solid var(--border); margin-bottom:20px; gap:4px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.tabs::-webkit-scrollbar { display:none; }
+.tab { padding:8px 16px; font-size:13px; cursor:pointer; border:none; border-bottom:2px solid transparent; background:var(--bg2); color:var(--text2); transition:all 0.15s; border-radius: 6px 6px 0 0; white-space:nowrap; flex-shrink:0; }
 .tab:hover { color:var(--text); background:var(--bg3); }
 .tab.active { color:var(--text); border-bottom-color:var(--accent2); background:var(--bg); }
 
@@ -196,3 +197,118 @@ pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
 .repo-breadcrumb-link { color: var(--blue); cursor: pointer; text-decoration: none; }
 .repo-breadcrumb-link:hover { text-decoration: underline; }
 .repo-breadcrumb-sep { color: var(--text3); font-weight: 400; font-size: 16px; }
+
+/* ============================================================
+   RESPONSIVE — Tablet (max-width: 900px)
+   ============================================================ */
+@media (max-width: 900px) {
+  .navbar { gap: 10px; padding: 0 16px; }
+  .layout { grid-template-columns: 1fr !important; }
+  .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+}
+
+/* ============================================================
+   RESPONSIVE — Mobile (max-width: 640px)
+   ============================================================ */
+@media (max-width: 640px) {
+  /* Navbar */
+  .navbar { padding: 0 12px; gap: 6px; height: 52px; }
+  .navbar-brand { font-size: 15px; }
+
+  /* Hide the italic quote in navbar on mobile */
+  .navbar > div[style*="flex: 1"] { display: none !important; }
+
+  /* Shrink search bar */
+  .navbar button[title="Search users & repositories"] {
+    width: 130px !important;
+    min-width: 100px !important;
+  }
+  .navbar button[title="Search users & repositories"] span:last-child { display: none; }
+
+  /* Hide username label next to avatar */
+  .navbar-links a > span.text-sm { display: none; }
+
+  /* Sign out button in navbar — icon only */
+  .navbar-links > button.btn-ghost.btn-sm { padding: 4px 6px; font-size: 0; }
+
+  /* General page padding */
+  .container { padding: 0 12px; }
+  .main-content { padding: 14px 12px; }
+
+  /* Cards */
+  .card { padding: 12px; }
+
+  /* Dashboard two-column sidebar → stack */
+  .layout { grid-template-columns: 1fr !important; }
+
+  /* Profile page grid — single column */
+  .profile-grid-cols { grid-template-columns: 1fr !important; }
+
+  /* Profile left side center on mobile */
+  .profile-left-col { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .profile-left-col > div:first-child { margin: 0 auto 16px !important; }
+
+  /* Stat cards 2x2 grid */
+  .stat-row { flex-wrap: wrap; }
+  .stat-row > div { flex: 1 1 calc(50% - 8px) !important; min-width: 110px; }
+
+  /* RepoView: file tree + about panel → stack */
+  .repo-tree-about-grid { grid-template-columns: 1fr !important; }
+  .repo-tree-about-grid > div:last-child { display: none; }
+
+  /* RepoView: editor layout → commit panel on top, editor below */
+  .repo-editor-layout { grid-template-columns: 1fr !important; }
+
+  /* Insights grid */
+  .insights-two-col { grid-template-columns: 1fr !important; }
+
+  /* Explore user cards */
+  .explore-users-grid { grid-template-columns: 1fr !important; }
+
+  /* Settings modal: sidebar becomes horizontal tabs */
+  .settings-body { flex-direction: column !important; }
+  .settings-sidebar-col {
+    width: 100% !important; border-right: none !important;
+    border-bottom: 1px solid var(--border);
+    flex-direction: row !important; overflow-x: auto;
+    padding: 8px !important; gap: 4px !important; display: flex !important;
+  }
+  .settings-sidebar-col button { white-space: nowrap; flex-shrink: 0; width: auto !important; }
+
+  /* Tabs */
+  .tab { padding: 7px 10px; font-size: 12px; }
+
+  /* Hide non-essential badge columns in list rows */
+  .hide-mobile { display: none !important; }
+
+  /* Action buttons row in profile → center */
+  .profile-action-row { justify-content: center !important; }
+
+  /* Full width modals on mobile slide up */
+  .modal-container { align-items: flex-end !important; padding: 0 !important; }
+  .modal-box {
+    border-radius: 16px 16px 0 0 !important;
+    max-width: 100% !important; width: 100% !important;
+    max-height: 92vh !important;
+  }
+
+  /* Repo header row → wrap */
+  .repo-name-row { flex-wrap: wrap; gap: 8px; }
+  .repo-name-row h1 { font-size: 18px !important; }
+
+  /* Commit card meta row → wrap */
+  .commit-meta-row { flex-wrap: wrap; gap: 6px !important; }
+
+  /* Issue/PR header */
+  .issue-header-row { flex-direction: column; align-items: flex-start !important; gap: 8px; }
+}
+
+/* ============================================================
+   RESPONSIVE — Extra Small (max-width: 400px)
+   ============================================================ */
+@media (max-width: 400px) {
+  .navbar-brand span { display: none; }
+  .btn { padding: 5px 9px; font-size: 12px; }
+  .stat-row > div { flex: 1 1 100% !important; }
+  .tab { padding: 6px 8px; font-size: 11px; }
+}
