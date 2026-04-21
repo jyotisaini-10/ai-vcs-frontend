@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import Navbar from '../components/ui/Navbar'
-import { getRepos } from '../api'
+import { getRepos, updateProfile } from '../api'
 import useAuthStore from '../store/authStore'
 
 function timeAgo(date) {
@@ -27,12 +27,180 @@ function StatCard({ value, label, color }) {
   )
 }
 
+function EditProfileModal({ user, onClose, onSave }) {
+  const [form, setForm] = useState({
+    username: user?.username || '',
+    bio: user?.bio || '',
+    location: user?.location || '',
+    website: user?.website || '',
+    currentPassword: '',
+    newPassword: '',
+  })
+  const [loading, setLoading] = useState(false)
+  const [tab, setTab] = useState('profile')
+
+  const handle = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
+
+  const handleSubmit = async () => {
+    setLoading(true)
+    try {
+      const payload = {
+        username: form.username,
+        bio: form.bio,
+        location: form.location,
+        website: form.website,
+      }
+      if (form.currentPassword && form.newPassword) {
+        payload.currentPassword = form.currentPassword
+        payload.newPassword = form.newPassword
+      }
+      const { data } = await updateProfile(payload)
+      onSave(data.user)
+      toast.success('Profile updated!')
+      onClose()
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update profile')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const inputStyle = {
+    width: '100%', padding: '9px 12px', borderRadius: 8,
+    border: '1px solid var(--border)', background: 'var(--bg)',
+    color: 'var(--text)', fontSize: 14, outline: 'none', boxSizing: 'border-box'
+  }
+  const labelStyle = {
+    fontSize: 13, color: 'var(--text2)', marginBottom: 4,
+    display: 'block', fontWeight: 500
+  }
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      zIndex: 1000, padding: 16
+    }}>
+      <div style={{
+        background: 'var(--bg2)', border: '1px solid var(--border)',
+        borderRadius: 16, width: '100%', maxWidth: 480,
+        boxShadow: '0 20px 60px rgba(0,0,0,0.4)'
+      }}>
+        {/* Header */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '20px 24px', borderBottom: '1px solid var(--border)'
+        }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', margin: 0 }}>Edit Profile</h2>
+          <button onClick={onClose} style={{
+            background: 'none', border: 'none', color: 'var(--text3)',
+            fontSize: 22, cursor: 'pointer', lineHeight: 1
+          }}>×</button>
+        </div>
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', padding: '0 24px' }}>
+          {[{ id: 'profile', label: '👤 Profile' }, { id: 'password', label: '🔒 Password' }].map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)} style={{
+              padding: '12px 16px', fontSize: 13, fontWeight: tab === t.id ? 600 : 400,
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              color: tab === t.id ? 'var(--text)' : 'var(--text3)',
+              borderBottom: tab === t.id ? '2px solid #8b5cf6' : '2px solid transparent',
+              marginBottom: -1
+            }}>{t.label}</button>
+          ))}
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {tab === 'profile' && (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 4 }}>
+                <div style={{
+                  width: 64, height: 64, borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 28, fontWeight: 700, color: '#fff', flexShrink: 0
+                }}>
+                  {form.username?.[0]?.toUpperCase() || '?'}
+                </div>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{form.username}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text3)' }}>{user?.email}</div>
+                </div>
+              </div>
+              <div>
+                <label style={labelStyle}>Username</label>
+                <input name="username" value={form.username} onChange={handle} style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>
+                  Bio <span style={{ color: 'var(--text3)', fontWeight: 400 }}>({form.bio.length}/160)</span>
+                </label>
+                <textarea name="bio" value={form.bio} onChange={handle}
+                  maxLength={160} rows={3}
+                  placeholder="Tell us a little about yourself..."
+                  style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} />
+              </div>
+              <div>
+                <label style={labelStyle}>Location</label>
+                <input name="location" value={form.location} onChange={handle}
+                  placeholder="City, Country" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Website</label>
+                <input name="website" value={form.website} onChange={handle}
+                  placeholder="https://yourwebsite.com" style={inputStyle} />
+              </div>
+            </>
+          )}
+
+          {tab === 'password' && (
+            <>
+              <div style={{
+                padding: '12px 16px', background: 'rgba(139,92,246,0.08)',
+                borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)',
+                fontSize: 13, color: 'var(--text2)'
+              }}>
+                🔒 Leave blank if you don't want to change your password.
+              </div>
+              <div>
+                <label style={labelStyle}>Current Password</label>
+                <input name="currentPassword" type="password" value={form.currentPassword}
+                  onChange={handle} placeholder="Enter current password" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>New Password</label>
+                <input name="newPassword" type="password" value={form.newPassword}
+                  onChange={handle} placeholder="Min 6 characters" style={inputStyle} />
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div style={{
+          display: 'flex', gap: 10, justifyContent: 'flex-end',
+          padding: '16px 24px', borderTop: '1px solid var(--border)'
+        }}>
+          <button onClick={onClose} className="btn" style={{ fontSize: 13 }}>Cancel</button>
+          <button onClick={handleSubmit} disabled={loading}
+            className="btn btn-primary" style={{ fontSize: 13, minWidth: 100 }}>
+            {loading ? 'Saving...' : 'Save changes'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Profile() {
-  const { user, logout } = useAuthStore()
+  const { user, logout, setUser } = useAuthStore()
   const navigate = useNavigate()
   const [repos, setRepos] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('repos')
+  const [showEdit, setShowEdit] = useState(false)
 
   useEffect(() => {
     getRepos()
@@ -56,12 +224,20 @@ export default function Profile() {
   return (
     <div>
       <Navbar />
+      {showEdit && (
+        <EditProfileModal
+          user={user}
+          onClose={() => setShowEdit(false)}
+          onSave={(updatedUser) => setUser(updatedUser)}
+        />
+      )}
 
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px', display: 'grid', gridTemplateColumns: '260px 1fr', gap: 32 }}>
-
-        {/* ── Left: Avatar + bio ── */}
+      <div style={{
+        maxWidth: 1100, margin: '0 auto', padding: '32px 20px',
+        display: 'grid', gridTemplateColumns: '260px 1fr', gap: 32
+      }}>
+        {/* Left */}
         <div>
-          {/* Avatar */}
           <div style={{
             width: '100%', aspectRatio: '1', maxWidth: 220,
             borderRadius: '50%', background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 60%, #4c1d95 100%)',
@@ -73,29 +249,35 @@ export default function Profile() {
             {initials}
           </div>
 
-          {/* Name */}
           <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>{user?.username}</h1>
-          <p style={{ fontSize: 14, color: 'var(--text3)', marginBottom: 16 }}>{user?.email}</p>
+          <p style={{ fontSize: 14, color: 'var(--text3)', marginBottom: 8 }}>{user?.email}</p>
 
-          {/* Edit / Sign out */}
+          {user?.bio && (
+            <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.5 }}>{user.bio}</p>
+          )}
+          {user?.location && (
+            <p style={{ fontSize: 13, color: 'var(--text3)', marginBottom: 4 }}>📍 {user.location}</p>
+          )}
+          {user?.website && (
+            <p style={{ fontSize: 13, marginBottom: 10 }}>
+              <a href={user.website} target="_blank" rel="noreferrer"
+                style={{ color: 'var(--blue)' }}>🔗 {user.website}</a>
+            </p>
+          )}
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
-            <button
-              className="btn w-full"
+            <button className="btn w-full"
               style={{ fontSize: 13, justifyContent: 'center', width: '100%' }}
-              onClick={() => toast('Profile editing coming soon!', { icon: '🛠️' })}
-            >
+              onClick={() => setShowEdit(true)}>
               Edit profile
             </button>
-            <button
-              className="btn btn-danger btn-sm"
+            <button className="btn btn-danger btn-sm"
               style={{ fontSize: 13, justifyContent: 'center', width: '100%' }}
-              onClick={handleLogout}
-            >
+              onClick={handleLogout}>
               Sign out
             </button>
           </div>
 
-          {/* Info list */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
               { icon: '📅', label: `Joined ${joinedDate}` },
@@ -112,9 +294,8 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* ── Right: tabs + content ── */}
+        {/* Right */}
         <div>
-          {/* Stats row */}
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
             <StatCard value={repos.length} label="Repositories" />
             <StatCard value={totalCommits} label="Commits" color="var(--accent2)" />
@@ -122,26 +303,23 @@ export default function Profile() {
             <StatCard value={privateRepos.length} label="Private" />
           </div>
 
-          {/* Tabs */}
           <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--border)', marginBottom: 20 }}>
             {[
               { id: 'repos', label: `Repositories (${repos.length})` },
               { id: 'activity', label: 'Activity' },
             ].map(tab => (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                style={{
-                  padding: '10px 18px', fontSize: 13, fontWeight: activeTab === tab.id ? 600 : 400,
-                  border: 'none', background: 'transparent', cursor: 'pointer',
-                  color: activeTab === tab.id ? 'var(--text)' : 'var(--text3)',
-                  borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
-                  marginBottom: -1, transition: 'color 0.15s'
-                }}>
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
+                padding: '10px 18px', fontSize: 13, fontWeight: activeTab === tab.id ? 600 : 400,
+                border: 'none', background: 'transparent', cursor: 'pointer',
+                color: activeTab === tab.id ? 'var(--text)' : 'var(--text3)',
+                borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
+                marginBottom: -1, transition: 'color 0.15s'
+              }}>
                 {tab.label}
               </button>
             ))}
           </div>
 
-          {/* Repositories tab */}
           {activeTab === 'repos' && (
             <div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
@@ -216,7 +394,6 @@ export default function Profile() {
             </div>
           )}
 
-          {/* Activity tab */}
           {activeTab === 'activity' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {repos.length === 0 ? (
