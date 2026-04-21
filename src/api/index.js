@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+const API_BASE = (process.env.REACT_APP_API_URL || 'https://ai-vcs-backend.vercel.app') + '/api'
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://ai-vcs-backend.vercel.app'
+  baseURL: API_BASE
 })
 
 api.interceptors.request.use((config) => {
