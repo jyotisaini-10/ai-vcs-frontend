@@ -323,6 +323,24 @@ export default function Profile() {
             </p>
           )}
 
+          {/* Followers / Following — above Edit profile */}
+          <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+            <button onClick={() => setFollowModal('followers')} style={{
+              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+              color: 'var(--text2)', fontSize: 14, textAlign: 'left'
+            }}>
+              <strong style={{ color: 'var(--text)', fontSize: 15 }}>{followers.length}</strong>
+              <span style={{ marginLeft: 4 }}>followers</span>
+            </button>
+            <button onClick={() => setFollowModal('following')} style={{
+              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+              color: 'var(--text2)', fontSize: 14, textAlign: 'left'
+            }}>
+              <strong style={{ color: 'var(--text)', fontSize: 15 }}>{following.length}</strong>
+              <span style={{ marginLeft: 4 }}>following</span>
+            </button>
+          </div>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
             <button className="btn w-full"
               style={{ fontSize: 13, justifyContent: 'center', width: '100%' }}
@@ -351,23 +369,7 @@ export default function Profile() {
             ))}
           </div>
 
-          {/* Followers / Following */}
-          <div style={{ display: 'flex', gap: 16, marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border)' }}>
-            <button onClick={() => setFollowModal('followers')} style={{
-              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-              color: 'var(--text2)', fontSize: 14, textAlign: 'left'
-            }}>
-              <strong style={{ color: 'var(--text)', fontSize: 16 }}>{followers.length}</strong>
-              <span style={{ marginLeft: 4 }}>followers</span>
-            </button>
-            <button onClick={() => setFollowModal('following')} style={{
-              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-              color: 'var(--text2)', fontSize: 14, textAlign: 'left'
-            }}>
-              <strong style={{ color: 'var(--text)', fontSize: 16 }}>{following.length}</strong>
-              <span style={{ marginLeft: 4 }}>following</span>
-            </button>
-          </div>
+
         </div>
 
         {/* Right */}
