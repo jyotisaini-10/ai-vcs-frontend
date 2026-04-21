@@ -67,6 +67,7 @@ export const getDiscussion = (repoId, id) => api.get(`/repos/${repoId}/discussio
 export const updateDiscussion = (repoId, id, data) => api.patch(`/repos/${repoId}/discussions/${id}`, data)
 export const deleteDiscussion = (repoId, id) => api.delete(`/repos/${repoId}/discussions/${id}`)
 export const addReply = (repoId, discussionId, data) => api.post(`/repos/${repoId}/discussions/${discussionId}/replies`, data)
+export const markAnswer = (repoId, discussionId, replyId) => api.patch(`/repos/${repoId}/discussions/${discussionId}/replies/${replyId}/answer`)
 export const addDiscussionComment = (repoId, id, data) => api.post(`/repos/${repoId}/discussions/${id}/comments`, data)
 
 export default api
