@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import Navbar from '../components/ui/Navbar'
-import { getRepos, updateProfile } from '../api'
+import { getRepos, updateProfile, getMyFollowers, getMyFollowing } from '../api'
 import useAuthStore from '../store/authStore'
 
 function timeAgo(date) {
@@ -15,14 +15,60 @@ function timeAgo(date) {
   return `${Math.floor(hrs / 24)}d ago`
 }
 
-function StatCard({ value, label, color }) {
+function StatCard({ value, label, color, onClick }) {
   return (
-    <div style={{
+    <div onClick={onClick} style={{
       background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12,
-      padding: '18px 20px', textAlign: 'center', flex: '1 1 120px'
-    }}>
+      padding: '18px 20px', textAlign: 'center', flex: '1 1 120px',
+      cursor: onClick ? 'pointer' : 'default', transition: 'border-color 0.15s, box-shadow 0.15s'
+    }}
+      onMouseEnter={e => { if (onClick) { e.currentTarget.style.borderColor = 'rgba(139,92,246,0.4)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(139,92,246,0.1)' } }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none' }}>
       <div style={{ fontSize: 28, fontWeight: 700, color: color || 'var(--text)', marginBottom: 4 }}>{value}</div>
       <div style={{ fontSize: 12, color: 'var(--text3)' }}>{label}</div>
+    </div>
+  )
+}
+
+function FollowListModal({ title, users, onClose }) {
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 1000,
+      background: 'rgba(0,0,0,0.65)', display: 'flex',
+      alignItems: 'center', justifyContent: 'center', padding: 16
+    }} onClick={onClose}>
+      <div style={{
+        background: 'var(--bg2)', border: '1px solid var(--border)',
+        borderRadius: 16, width: '100%', maxWidth: 420, maxHeight: '70vh',
+        overflow: 'hidden', display: 'flex', flexDirection: 'column',
+        boxShadow: '0 24px 80px rgba(0,0,0,0.5)'
+      }} onClick={e => e.stopPropagation()}>
+        <div style={{ padding: '18px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>{title}</span>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text2)', cursor: 'pointer', fontSize: 22, lineHeight: 1 }}>×</button>
+        </div>
+        <div style={{ overflowY: 'auto', flex: 1, padding: '8px 12px' }}>
+          {users.length === 0 ? (
+            <p style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text3)', fontSize: 14 }}>No users yet.</p>
+          ) : users.map(u => (
+            <div key={u._id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 8px', borderRadius: 10 }}>
+              <div style={{
+                width: 38, height: 38, borderRadius: '50%',
+                background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 15, fontWeight: 700, color: '#fff', flexShrink: 0
+              }}>{u.username?.[0]?.toUpperCase()}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>{u.username}</div>
+                {u.bio && <div style={{ fontSize: 12, color: 'var(--text3)' }}>{u.bio}</div>}
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text3)' }}>
+                <span>{u.followers?.length || 0} followers</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -201,12 +247,17 @@ export default function Profile() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('repos')
   const [showEdit, setShowEdit] = useState(false)
+  const [followers, setFollowers] = useState([])
+  const [following, setFollowing] = useState([])
+  const [followModal, setFollowModal] = useState(null) // 'followers' | 'following'
 
   useEffect(() => {
     getRepos()
       .then(({ data }) => setRepos(data.repos || []))
       .catch(() => toast.error('Failed to load repositories'))
       .finally(() => setLoading(false))
+    getMyFollowers().then(r => setFollowers(r.data.users || [])).catch(() => {})
+    getMyFollowing().then(r => setFollowing(r.data.users || [])).catch(() => {})
   }, [])
 
   const handleLogout = () => { logout(); navigate('/login') }
@@ -229,6 +280,13 @@ export default function Profile() {
           user={user}
           onClose={() => setShowEdit(false)}
           onSave={(updatedUser) => setUser(updatedUser)}
+        />
+      )}
+      {followModal && (
+        <FollowListModal
+          title={followModal === 'followers' ? `Your Followers (${followers.length})` : `You're Following (${following.length})`}
+          users={followModal === 'followers' ? followers : following}
+          onClose={() => setFollowModal(null)}
         />
       )}
 
@@ -292,6 +350,24 @@ export default function Profile() {
               </div>
             ))}
           </div>
+
+          {/* Followers / Following */}
+          <div style={{ display: 'flex', gap: 16, marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border)' }}>
+            <button onClick={() => setFollowModal('followers')} style={{
+              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+              color: 'var(--text2)', fontSize: 14, textAlign: 'left'
+            }}>
+              <strong style={{ color: 'var(--text)', fontSize: 16 }}>{followers.length}</strong>
+              <span style={{ marginLeft: 4 }}>followers</span>
+            </button>
+            <button onClick={() => setFollowModal('following')} style={{
+              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+              color: 'var(--text2)', fontSize: 14, textAlign: 'left'
+            }}>
+              <strong style={{ color: 'var(--text)', fontSize: 16 }}>{following.length}</strong>
+              <span style={{ marginLeft: 4 }}>following</span>
+            </button>
+          </div>
         </div>
 
         {/* Right */}
@@ -299,8 +375,8 @@ export default function Profile() {
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
             <StatCard value={repos.length} label="Repositories" />
             <StatCard value={totalCommits} label="Commits" color="var(--accent2)" />
-            <StatCard value={publicRepos.length} label="Public" color="#22c55e" />
-            <StatCard value={privateRepos.length} label="Private" />
+            <StatCard value={followers.length} label="Followers" color="var(--accent)" onClick={() => setFollowModal('followers')} />
+            <StatCard value={following.length} label="Following" onClick={() => setFollowModal('following')} />
           </div>
 
           <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--border)', marginBottom: 20 }}>

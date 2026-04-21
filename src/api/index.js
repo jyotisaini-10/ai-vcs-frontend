@@ -52,6 +52,10 @@ export const searchCode = (repoId, query) => api.post(`/repos/${repoId}/search`,
 // Explore (global user + repo search)
 export const exploreSearch = (params) => api.get('/explore', { params })
 export const getUserProfile = (username) => api.get(`/explore/user/${username}`)
+export const followUser = (username) => api.post(`/explore/user/${username}/follow`)
+export const unfollowUser = (username) => api.delete(`/explore/user/${username}/follow`)
+export const getMyFollowers = () => api.get('/explore/me/followers')
+export const getMyFollowing = () => api.get('/explore/me/following')
 
 // Issues
 export const getIssues = (repoId, params) => api.get(`/repos/${repoId}/issues`, { params })
