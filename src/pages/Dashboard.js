@@ -19,6 +19,7 @@ export default function Dashboard() {
   const [repos, setRepos] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [showAll, setShowAll] = useState(false)
   const { user } = useAuthStore()
   const navigate = useNavigate()
 
@@ -164,7 +165,7 @@ export default function Dashboard() {
             ) : filtered.length === 0 ? (
               <p className="text-xs text-muted" style={{ padding: '8px 0' }}>No repositories found</p>
             ) : (
-              filtered.slice(0, 8).map((repo) => (
+              (showAll ? filtered : filtered.slice(0, 4)).map((repo) => (
                 <Link key={repo._id} to={`/repo/${repo._id}`}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px',
                     borderRadius: 6, textDecoration: 'none', color: 'var(--text2)', fontSize: 12 }}
@@ -182,10 +183,23 @@ export default function Dashboard() {
             )}
           </div>
 
-          {repos.length > 0 && (
-            <Link to="/" style={{ fontSize: 12, color: 'var(--blue)', marginTop: 8, display: 'block', padding: '4px 8px' }}>
-              Show more
-            </Link>
+          {filtered.length > 4 && (
+            <button
+              onClick={() => setShowAll(v => !v)}
+              style={{
+                fontSize: 12, color: 'var(--blue)', marginTop: 6,
+                display: 'flex', alignItems: 'center', gap: 4,
+                background: 'none', border: 'none', cursor: 'pointer',
+                padding: '4px 8px', borderRadius: 6, transition: 'background 0.15s'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--bg3)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"
+                style={{ transform: showAll ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              {showAll ? 'Show less' : `Show more (${filtered.length - 4} more)`}
+            </button>
           )}
         </div>
 
