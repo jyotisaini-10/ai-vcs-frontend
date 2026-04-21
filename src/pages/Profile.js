@@ -30,6 +30,232 @@ function StatCard({ value, label, color, onClick }) {
   )
 }
 
+function Toggle({ checked, onChange }) {
+  return (
+    <div onClick={onChange} style={{
+      width: 42, height: 24, borderRadius: 12, cursor: 'pointer', flexShrink: 0,
+      background: checked ? '#8b5cf6' : 'var(--bg3)',
+      border: '1px solid ' + (checked ? '#7c3aed' : 'var(--border)'),
+      position: 'relative', transition: 'background 0.2s, border-color 0.2s'
+    }}>
+      <div style={{
+        position: 'absolute', top: 2, left: checked ? 20 : 2,
+        width: 18, height: 18, borderRadius: '50%', background: '#fff',
+        transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)'
+      }} />
+    </div>
+  )
+}
+
+function SettingsModal({ user, onClose, onSave }) {
+  const [tab, setTab] = useState('notifications')
+  const [notifs, setNotifs] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('aivcs_notifs') || '{}') } catch { return {} }
+  })
+  const [appearance, setAppearance] = useState(() => localStorage.getItem('aivcs_theme') || 'dark')
+  const [privacy, setPrivacy] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('aivcs_privacy') || '{}') } catch { return {} }
+  })
+
+  const notifItems = [
+    { key: 'follows', label: 'New followers', desc: 'When someone follows you' },
+    { key: 'commits', label: 'Commit activity', desc: 'When someone commits to your repos' },
+    { key: 'issues', label: 'Issue mentions', desc: 'When someone opens or comments on issues' },
+    { key: 'pulls', label: 'Pull requests', desc: 'When PRs are opened or reviewed' },
+    { key: 'discussions', label: 'Discussions', desc: 'When someone starts or replies to a discussion' },
+    { key: 'ai', label: 'AI analysis complete', desc: 'When AI finishes reviewing your commits' },
+  ]
+
+  const toggleNotif = (key) => {
+    const updated = { ...notifs, [key]: !notifs[key] }
+    setNotifs(updated)
+    localStorage.setItem('aivcs_notifs', JSON.stringify(updated))
+    toast.success(`${updated[key] ? 'Enabled' : 'Disabled'} ${notifItems.find(n => n.key === key)?.label}`)
+  }
+
+  const tabs = [
+    { id: 'notifications', label: '🔔 Notifications' },
+    { id: 'privacy', label: '🔒 Privacy' },
+    { id: 'appearance', label: '🎨 Appearance' },
+    { id: 'account', label: '⚙️ Account' },
+  ]
+
+  const sectionTitle = (t) => (
+    <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 12, marginTop: 4 }}>{t}</div>
+  )
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 1000,
+      background: 'rgba(0,0,0,0.65)', display: 'flex',
+      alignItems: 'center', justifyContent: 'center', padding: 16
+    }} onClick={onClose}>
+      <div style={{
+        background: 'var(--bg2)', border: '1px solid var(--border)',
+        borderRadius: 16, width: '100%', maxWidth: 640,
+        maxHeight: '88vh', overflow: 'hidden',
+        display: 'flex', flexDirection: 'column',
+        boxShadow: '0 24px 80px rgba(0,0,0,0.5)'
+      }} onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', margin: 0 }}>Settings</h2>
+            <p style={{ fontSize: 13, color: 'var(--text3)', margin: '2px 0 0' }}>Manage your account preferences</p>
+          </div>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text2)', cursor: 'pointer', fontSize: 22, lineHeight: 1 }}>×</button>
+        </div>
+
+        <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+          {/* Sidebar tabs */}
+          <div style={{ width: 180, borderRight: '1px solid var(--border)', padding: '12px 8px', flexShrink: 0, overflowY: 'auto' }}>
+            {tabs.map(t => (
+              <button key={t.id} onClick={() => setTab(t.id)} style={{
+                width: '100%', textAlign: 'left', padding: '9px 12px', borderRadius: 8,
+                border: 'none', background: tab === t.id ? 'rgba(139,92,246,0.15)' : 'transparent',
+                color: tab === t.id ? 'var(--accent)' : 'var(--text2)',
+                fontWeight: tab === t.id ? 600 : 400, fontSize: 13,
+                cursor: 'pointer', marginBottom: 2, transition: 'background 0.15s'
+              }}
+                onMouseEnter={e => { if (tab !== t.id) e.currentTarget.style.background = 'var(--bg3)' }}
+                onMouseLeave={e => { if (tab !== t.id) e.currentTarget.style.background = 'transparent' }}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Content */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
+
+            {/* NOTIFICATIONS */}
+            {tab === 'notifications' && (
+              <div>
+                {sectionTitle('Email Notifications')}
+                <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 20, lineHeight: 1.5 }}>
+                  Choose which activities send you notifications.
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                  {notifItems.map((item, i) => (
+                    <div key={item.key} style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '14px 0',
+                      borderBottom: i < notifItems.length - 1 ? '1px solid var(--border)' : 'none'
+                    }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', marginBottom: 2 }}>{item.label}</div>
+                        <div style={{ fontSize: 12, color: 'var(--text3)' }}>{item.desc}</div>
+                      </div>
+                      <Toggle checked={!!notifs[item.key]} onChange={() => toggleNotif(item.key)} />
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: 20, padding: '12px 16px', background: 'rgba(139,92,246,0.08)', borderRadius: 10, border: '1px solid rgba(139,92,246,0.2)', fontSize: 13, color: 'var(--text2)' }}>
+                  💡 Notification preferences are saved locally. Email delivery coming soon.
+                </div>
+              </div>
+            )}
+
+            {/* PRIVACY */}
+            {tab === 'privacy' && (
+              <div>
+                {sectionTitle('Profile Privacy')}
+                {[
+                  { key: 'showEmail', label: 'Show email on profile', desc: 'Let others see your email address' },
+                  { key: 'showActivity', label: 'Show activity', desc: 'Display your recent commit activity publicly' },
+                  { key: 'allowFollow', label: 'Allow followers', desc: 'Let other users follow your profile' },
+                ].map((item, i, arr) => (
+                  <div key={item.key} style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '14px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none'
+                  }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', marginBottom: 2 }}>{item.label}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text3)' }}>{item.desc}</div>
+                    </div>
+                    <Toggle
+                      checked={privacy[item.key] !== false}
+                      onChange={() => {
+                        const updated = { ...privacy, [item.key]: privacy[item.key] === false ? true : false }
+                        setPrivacy(updated)
+                        localStorage.setItem('aivcs_privacy', JSON.stringify(updated))
+                        toast.success('Privacy setting updated')
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* APPEARANCE */}
+            {tab === 'appearance' && (
+              <div>
+                {sectionTitle('Theme')}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {[
+                    { id: 'dark', label: '🌙 Dark', desc: 'Dark background, light text' },
+                    { id: 'light', label: '☀️ Light', desc: 'Light background (coming soon)' },
+                    { id: 'system', label: '💻 System', desc: 'Follow your OS preference (coming soon)' },
+                  ].map(opt => (
+                    <div key={opt.id} onClick={() => { if (opt.id === 'dark') { setAppearance(opt.id); localStorage.setItem('aivcs_theme', opt.id); toast.success('Theme set to Dark') } else toast('Coming soon!') }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 14,
+                        padding: '14px 16px', borderRadius: 10, cursor: 'pointer',
+                        border: `2px solid ${appearance === opt.id ? '#8b5cf6' : 'var(--border)'}`,
+                        background: appearance === opt.id ? 'rgba(139,92,246,0.08)' : 'var(--bg)',
+                        transition: 'border-color 0.15s, background 0.15s'
+                      }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>{opt.label}</div>
+                        <div style={{ fontSize: 12, color: 'var(--text3)' }}>{opt.desc}</div>
+                      </div>
+                      {appearance === opt.id && (
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <circle cx="8" cy="8" r="7" stroke="#8b5cf6" strokeWidth="1.5"/>
+                          <path d="M5 8l2 2 4-4" stroke="#8b5cf6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ACCOUNT */}
+            {tab === 'account' && (
+              <div>
+                {sectionTitle('Account Info')}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {[
+                    { label: 'Username', value: user?.username },
+                    { label: 'Email', value: user?.email },
+                    { label: 'Member since', value: user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Unknown' },
+                  ].map(item => (
+                    <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
+                      <span style={{ fontSize: 13, color: 'var(--text2)' }}>{item.label}</span>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{item.value}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: 28 }}>
+                  {sectionTitle('Danger Zone')}
+                  <div style={{ padding: '16px', borderRadius: 10, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.04)' }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Delete account</div>
+                    <div style={{ fontSize: 13, color: 'var(--text3)', marginBottom: 12 }}>Once deleted, all your data will be permanently removed.</div>
+                    <button className="btn btn-danger btn-sm" onClick={() => toast.error('Please contact support to delete your account.')}>
+                      Delete my account
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function FollowListModal({ title, users, onClose }) {
   return (
     <div style={{
@@ -247,9 +473,10 @@ export default function Profile() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('repos')
   const [showEdit, setShowEdit] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const [followers, setFollowers] = useState([])
   const [following, setFollowing] = useState([])
-  const [followModal, setFollowModal] = useState(null) // 'followers' | 'following'
+  const [followModal, setFollowModal] = useState(null)
 
   useEffect(() => {
     getRepos()
@@ -280,6 +507,12 @@ export default function Profile() {
           user={user}
           onClose={() => setShowEdit(false)}
           onSave={(updatedUser) => setUser(updatedUser)}
+        />
+      )}
+      {showSettings && (
+        <SettingsModal
+          user={user}
+          onClose={() => setShowSettings(false)}
         />
       )}
       {followModal && (
@@ -374,6 +607,33 @@ export default function Profile() {
 
         {/* Right */}
         <div>
+          {/* Action buttons row — like GitHub's profile header */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+            {/* Share Profile */}
+            <button className="btn btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}
+              onClick={() => {
+                const url = `${window.location.origin}/profile`
+                navigator.clipboard.writeText(url).then(() => toast.success('Profile link copied!')).catch(() => toast.error('Copy failed'))
+              }}>
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <circle cx="10.5" cy="2.5" r="1.5" stroke="currentColor" strokeWidth="1.2"/>
+                <circle cx="2.5" cy="6.5" r="1.5" stroke="currentColor" strokeWidth="1.2"/>
+                <circle cx="10.5" cy="10.5" r="1.5" stroke="currentColor" strokeWidth="1.2"/>
+                <path d="M4 5.5l5-2.5M4 7.5l5 2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+              Share profile
+            </button>
+            {/* Settings */}
+            <button className="btn btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}
+              onClick={() => setShowSettings(true)}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <circle cx="7" cy="7" r="2" stroke="currentColor" strokeWidth="1.3"/>
+                <path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.636 2.636l1.06 1.06M10.304 10.304l1.06 1.06M2.636 11.364l1.06-1.06M10.304 3.696l1.06-1.06" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+              </svg>
+              Settings
+            </button>
+          </div>
+
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
             <StatCard value={repos.length} label="Repositories" />
             <StatCard value={totalCommits} label="Commits" color="var(--accent2)" />
