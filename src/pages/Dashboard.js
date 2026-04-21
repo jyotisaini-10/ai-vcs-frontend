@@ -198,7 +198,7 @@ export default function Dashboard() {
                 style={{ transform: showAll ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
                 <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              {showAll ? 'Show less' : `Show more (${filtered.length - 4} more)`}
+              {showAll ? 'Show less' : 'Show more'}
             </button>
           )}
         </div>
