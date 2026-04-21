@@ -243,17 +243,32 @@ const handleDiscussionsClick = () => {
           {user && (
             <>
               <div ref={dropRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 8 }}>
-                {/* Global Search Button */}
+                {/* Global Search Bar */}
                 <button
-                  className="btn btn-ghost btn-sm"
                   onClick={() => navigate('/explore')}
                   title="Search users & repositories"
-                  style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 6, borderRadius: 6 }}>
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    padding: '6px 12px', borderRadius: 8, cursor: 'text',
+                    background: 'var(--bg3)', border: '1px solid var(--border)',
+                    color: 'var(--text3)', width: 260, minWidth: 200,
+                    transition: 'border-color 0.15s, box-shadow 0.15s, width 0.2s',
+                    outline: 'none'
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(139,92,246,0.5)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.1)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none' }}>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
                     <circle cx="6" cy="6" r="4" stroke="currentColor" strokeWidth="1.4"/>
                     <path d="M9.5 9.5L13 13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
                   </svg>
-                  <span style={{ fontSize: 13 }}>Search</span>
+                  <span style={{ fontSize: 13, flex: 1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    Search users, repos...
+                  </span>
+                  <span style={{
+                    fontSize: 11, padding: '1px 6px', borderRadius: 5,
+                    border: '1px solid var(--border)', color: 'var(--text3)',
+                    background: 'var(--bg2)', flexShrink: 0, letterSpacing: 0.3
+                  }}>/</span>
                 </button>
 
                 {/* + New dropdown */}
