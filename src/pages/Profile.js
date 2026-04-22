@@ -523,10 +523,7 @@ export default function Profile() {
         />
       )}
 
-      <div className="profile-grid-cols" style={{
-        maxWidth: 1100, margin: '0 auto', padding: '32px 20px',
-        display: 'grid', gridTemplateColumns: '260px 1fr', gap: 32
-      }}>
+      <div className="profile-grid-cols">
         {/* Left */}
         <div className="profile-left-col">
           <div style={{

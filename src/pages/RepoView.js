@@ -200,9 +200,9 @@ export default function RepoView() {
   return (
     <div>
       <Navbar />
-      <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ padding: '16px 24px', maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="repo-name-row">
+          <div className="repo-name-row-left">
             <button onClick={() => navigate('/')} className="btn btn-ghost"
               style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text3)' }}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -218,7 +218,7 @@ export default function RepoView() {
             </h1>
             {repo?.isPrivate && <span className="badge badge-gray" style={{ transform: 'translateY(1px)' }}>Private</span>}
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="repo-name-row-right">
             <Link to={`/repo/${id}/search`} className="btn btn-sm">
               <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                 <circle cx="5.5" cy="5.5" r="3.5" stroke="currentColor" strokeWidth="1.2" />
@@ -252,7 +252,7 @@ export default function RepoView() {
             </div>
 
             {viewMode === 'tree' && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 296px', gap: '24px', alignItems: 'start' }}>
+              <div className="repo-tree-about-grid">
                 <div className="repo-tree-card" style={{ marginTop: 0 }}>
                   <div className="repo-tree-header">
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, maxWidth: '75%' }}>
@@ -305,7 +305,7 @@ export default function RepoView() {
                   </div>
                 </div>
 
-                <div style={{ padding: '0 8px' }}>
+                <div className="repo-about-panel" style={{ padding: '0 8px' }}>
                   <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: 'var(--text)' }}>About</h2>
                   <p style={{ fontSize: 14, color: 'var(--text2)', marginBottom: 24, lineHeight: 1.5 }}>
                     {repo?.description || 'No description provided.'}
@@ -330,7 +330,7 @@ export default function RepoView() {
             )}
 
             {(viewMode === 'blob' || viewMode === 'create') && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 300px) 1fr', gap: '20px', alignItems: 'start' }}>
+              <div className="repo-editor-layout">
                 <div className="card" style={{ padding: '20px', background: 'var(--bg2)' }}>
                   <h3 style={{ fontSize: 14, marginBottom: 16 }}>Commit changes</h3>
                   <textarea className="input" style={{ fontSize: 13, minHeight: 80, marginBottom: 12, resize: 'vertical' }}
@@ -424,7 +424,7 @@ export default function RepoView() {
           const maxCommits = topCommitters.length > 0 ? Math.max(...topCommitters.map(t => t[1])) : 1
 
           return (
-            <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: '250px 1fr', gap: 24, alignItems: 'start' }}>
+            <div style={{ marginTop: 24 }} className="insights-two-col">
               <div className="card" style={{ padding: 0 }}>
                 <div style={{ padding: '8px 0' }}>
                   {['Pulse', 'Contributors', 'Community standards', 'Commits', 'Code frequency', 'Dependency graph', 'Network', 'Forks'].map((item, i) => (

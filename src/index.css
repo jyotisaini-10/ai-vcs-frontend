@@ -143,6 +143,87 @@ pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
 .sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 16px; }
 .main-content { padding: 24px; overflow-x: hidden; }
 
+/* ---- Dashboard 3-column grid ---- */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr 300px;
+  gap: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+/* ---- RepoView: tree + about ---- */
+.repo-tree-about-grid {
+  display: grid;
+  grid-template-columns: 1fr 296px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ---- RepoView: editor layout ---- */
+.repo-editor-layout {
+  display: grid;
+  grid-template-columns: minmax(250px, 300px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ---- RepoView: insights 2-col ---- */
+.insights-two-col {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ---- Profile 2-col ---- */
+.profile-grid-cols {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 32px;
+}
+
+/* ---- Repo header row ---- */
+.repo-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 8px;
+}
+.repo-name-row-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.repo-name-row-right {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ---- Navbar search ---- */
+.navbar-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: text;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text3);
+  width: 260px;
+  min-width: 200px;
+  transition: border-color 0.15s, box-shadow 0.15s, width 0.2s;
+  outline: none;
+}
+
 /* Tab bar — scrollable on small screens */
 .tabs { display:flex; border-bottom:1px solid var(--border); margin-bottom:20px; gap:4px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
 .tabs::-webkit-scrollbar { display:none; }
@@ -205,6 +286,21 @@ pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
   .navbar { gap: 10px; padding: 0 16px; }
   .layout { grid-template-columns: 1fr !important; }
   .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+
+  /* Dashboard: collapse right sidebar into stacked layout */
+  .dashboard-grid {
+    grid-template-columns: 260px 1fr;
+  }
+  .dashboard-right-sidebar { display: none; }
+
+  /* Profile grid: 2-col to 1-col */
+  .profile-grid-cols { grid-template-columns: 1fr !important; gap: 16px; }
+
+  /* Insights */
+  .insights-two-col { grid-template-columns: 1fr !important; }
+
+  /* Navbar search bar */
+  .navbar-search { width: 180px; min-width: 140px; }
 }
 
 /* ============================================================
@@ -216,20 +312,21 @@ pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
   .navbar-brand { font-size: 15px; }
 
   /* Hide the italic quote in navbar on mobile */
-  .navbar > div[style*="flex: 1"] { display: none !important; }
+  .navbar-quote { display: none !important; }
 
-  /* Shrink search bar */
-  .navbar button[title="Search users & repositories"] {
-    width: 130px !important;
-    min-width: 100px !important;
+  /* Shrink search bar on mobile */
+  .navbar-search {
+    width: 120px !important;
+    min-width: 90px !important;
   }
-  .navbar button[title="Search users & repositories"] span:last-child { display: none; }
+  .navbar-search .search-label { display: none; }
+  .navbar-search .search-kbd { display: none; }
 
   /* Hide username label next to avatar */
-  .navbar-links a > span.text-sm { display: none; }
+  .navbar-username { display: none; }
 
-  /* Sign out button in navbar — icon only */
-  .navbar-links > button.btn-ghost.btn-sm { padding: 4px 6px; font-size: 0; }
+  /* Sign out button in navbar — hide text */
+  .navbar-signout-text { display: none; }
 
   /* General page padding */
   .container { padding: 0 12px; }
@@ -238,15 +335,28 @@ pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
   /* Cards */
   .card { padding: 12px; }
 
-  /* Dashboard two-column sidebar → stack */
-  .layout { grid-template-columns: 1fr !important; }
+  /* Dashboard: full stack on mobile */
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+    padding: 12px !important;
+    gap: 16px !important;
+  }
+  .dashboard-right-sidebar { display: block !important; }
+
+  /* Dashboard: left sidebar goes on top */
+  .dashboard-left-sidebar {
+    order: -1;
+  }
 
   /* Profile page grid — single column */
-  .profile-grid-cols { grid-template-columns: 1fr !important; }
+  .profile-grid-cols {
+    grid-template-columns: 1fr !important;
+    padding: 16px 12px !important;
+    gap: 16px !important;
+  }
 
   /* Profile left side center on mobile */
   .profile-left-col { display: flex; flex-direction: column; align-items: center; text-align: center; }
-  .profile-left-col > div:first-child { margin: 0 auto 16px !important; }
 
   /* Stat cards 2x2 grid */
   .stat-row { flex-wrap: wrap; }
@@ -254,10 +364,14 @@ pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
 
   /* RepoView: file tree + about panel → stack */
   .repo-tree-about-grid { grid-template-columns: 1fr !important; }
-  .repo-tree-about-grid > div:last-child { display: none; }
+  .repo-tree-about-grid > .repo-about-panel { display: none; }
 
   /* RepoView: editor layout → commit panel on top, editor below */
   .repo-editor-layout { grid-template-columns: 1fr !important; }
+
+  /* RepoView: repo header */
+  .repo-name-row { flex-direction: column; align-items: flex-start !important; }
+  .repo-name-row h1 { font-size: 18px !important; }
 
   /* Insights grid */
   .insights-two-col { grid-template-columns: 1fr !important; }
@@ -292,15 +406,14 @@ pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
     max-height: 92vh !important;
   }
 
-  /* Repo header row → wrap */
-  .repo-name-row { flex-wrap: wrap; gap: 8px; }
-  .repo-name-row h1 { font-size: 18px !important; }
-
   /* Commit card meta row → wrap */
   .commit-meta-row { flex-wrap: wrap; gap: 6px !important; }
 
   /* Issue/PR header */
   .issue-header-row { flex-direction: column; align-items: flex-start !important; gap: 8px; }
+
+  /* RepoView code tab toolbar */
+  .repo-code-toolbar { flex-wrap: wrap; gap: 8px; }
 }
 
 /* ============================================================
@@ -311,4 +424,8 @@ pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
   .btn { padding: 5px 9px; font-size: 12px; }
   .stat-row > div { flex: 1 1 100% !important; }
   .tab { padding: 6px 8px; font-size: 11px; }
+  .navbar-search { width: 80px !important; min-width: 60px !important; }
 }
+
+/* Sign-out icon is always displayed; the text label hides on mobile */
+.navbar-signout-icon { display: inline-block; }

@@ -140,10 +140,10 @@ export default function Dashboard() {
   return (
     <div>
       <Navbar />
-      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr 300px', gap: 24, maxWidth: 1280, margin: '0 auto', padding: '24px 16px' }}>
+      <div className="dashboard-grid">
 
         {/* Left sidebar */}
-        <div>
+        <div className="dashboard-left-sidebar">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <span style={{ fontWeight: 600, fontSize: 14 }}>Top repositories</span>
             <button className="btn btn-sm btn-primary" onClick={() => navigate('/new')}
@@ -430,7 +430,7 @@ export default function Dashboard() {
         </div>
 
         {/* Right sidebar */}
-        <div>
+        <div className="dashboard-right-sidebar">
           <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 10, padding: 16, marginBottom: 16 }}>
             <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Latest from AI-VCS</h3>
             {[

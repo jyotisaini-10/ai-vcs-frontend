@@ -232,7 +232,7 @@ const handleDiscussionsClick = () => {
         </Link>
 
         {user && (
-          <div style={{ flex: 1, padding: '0 32px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+          <div className="navbar-quote" style={{ flex: 1, padding: '0 32px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
             <span style={{ fontSize: 13, color: 'var(--text3)', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               "{quote}"
             </span>
@@ -245,26 +245,19 @@ const handleDiscussionsClick = () => {
               <div ref={dropRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 8 }}>
                 {/* Global Search Bar */}
                 <button
+                  className="navbar-search"
                   onClick={() => navigate('/explore')}
                   title="Search users & repositories"
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    padding: '6px 12px', borderRadius: 8, cursor: 'text',
-                    background: 'var(--bg3)', border: '1px solid var(--border)',
-                    color: 'var(--text3)', width: 260, minWidth: 200,
-                    transition: 'border-color 0.15s, box-shadow 0.15s, width 0.2s',
-                    outline: 'none'
-                  }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(139,92,246,0.5)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.1)' }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none' }}>
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
                     <circle cx="6" cy="6" r="4" stroke="currentColor" strokeWidth="1.4"/>
                     <path d="M9.5 9.5L13 13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
                   </svg>
-                  <span style={{ fontSize: 13, flex: 1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <span className="search-label" style={{ fontSize: 13, flex: 1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Search users, repos...
                   </span>
-                  <span style={{
+                  <span className="search-kbd" style={{
                     fontSize: 11, padding: '1px 6px', borderRadius: 5,
                     border: '1px solid var(--border)', color: 'var(--text3)',
                     background: 'var(--bg2)', flexShrink: 0, letterSpacing: 0.3
@@ -320,9 +313,14 @@ const handleDiscussionsClick = () => {
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, color: '#fff', flexShrink: 0 }}>
                   {user.username?.[0]?.toUpperCase()}
                 </div>
-                <span className="text-sm" style={{ color: 'var(--text2)', fontWeight: 500 }}>{user.username}</span>
+                <span className="navbar-username text-sm" style={{ color: 'var(--text2)', fontWeight: 500 }}>{user.username}</span>
               </Link>
-              <button className="btn btn-ghost btn-sm" onClick={handleLogout}>Sign out</button>
+              <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
+                <span className="navbar-signout-text">Sign out</span>
+                <svg className="navbar-signout-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M9 2H12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9M6 10l3-3-3-3M9 7H2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
             </>
           )}
         </div>
