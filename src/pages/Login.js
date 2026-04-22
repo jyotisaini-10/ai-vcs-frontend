@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { login } from '../api'
+import { login, forgotPassword } from '../api'
 import useAuthStore from '../store/authStore'
 
 export default function Login() {
@@ -92,11 +92,18 @@ export default function Login() {
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -8, marginBottom: 12 }}>
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
                   if (!form.email) {
                     toast.error('Please enter your email address first')
-                  } else {
-                    toast.success(`Reset link sent to ${form.email}`, { icon: '📧' })
+                    return
+                  }
+                  
+                  const toastId = toast.loading('Sending reset link...')
+                  try {
+                    const { data } = await forgotPassword({ email: form.email })
+                    toast.success(data.message || `Reset link sent to ${form.email}`, { id: toastId, icon: '📧' })
+                  } catch (err) {
+                    toast.error(err.response?.data?.message || 'Failed to send reset link', { id: toastId })
                   }
                 }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', fontSize: 12, padding: 0, fontWeight: 500 }}
