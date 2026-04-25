@@ -2,15 +2,30 @@ import { useState } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import Navbar from '../components/ui/Navbar'
-import { createRepo } from '../api'
+import { createRepo, pushCommit, generateRepoSummary } from '../api'
 
 export default function NewRepo() {
   const location = useLocation()
   const searchParams = new URLSearchParams(location.search)
   const defaultName = searchParams.get('name') || ''
   const [form, setForm] = useState({ name: defaultName, description: '', isPrivate: false })
+  const [selectedFiles, setSelectedFiles] = useState([])
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files).filter(f => {
+      const path = f.webkitRelativePath || f.name
+      if (path.includes('node_modules/') || path.includes('.git/') || path.includes('dist/') || path.includes('build/')) return false
+      if (f.size > 2 * 1024 * 1024) return false // skip > 2MB
+      return true
+    })
+    setSelectedFiles(prev => {
+      const existingPaths = new Set(prev.map(p => p.webkitRelativePath || p.name))
+      const newFiles = files.filter(f => !existingPaths.has(f.webkitRelativePath || f.name))
+      return [...prev, ...newFiles]
+    })
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -20,8 +35,30 @@ export default function NewRepo() {
     setLoading(true)
     try {
       const { data } = await createRepo(form)
+      const repoId = data.repo._id
+
+      if (selectedFiles.length > 0) {
+        toast.loading('Uploading files...', { id: 'upload' })
+        const filePromises = selectedFiles.map(file => {
+          return new Promise((resolve) => {
+            const reader = new FileReader()
+            reader.onload = (e) => resolve({ name: file.webkitRelativePath || file.name, content: e.target.result })
+            reader.onerror = () => resolve(null)
+            reader.readAsText(file)
+          })
+        })
+        const uploadedFiles = await Promise.all(filePromises)
+        const validFiles = uploadedFiles.filter(f => f && f.content && !f.content.includes('\u0000'))
+        
+        await pushCommit(repoId, {
+          files: validFiles,
+          message: 'Initial commit from device',
+          branch: 'main'
+        })
+      }
+
       toast.success('Repository created!')
-      navigate(`/repo/${data.repo._id}/setup`)
+      navigate(selectedFiles.length > 0 ? `/repo/${repoId}` : `/repo/${repoId}/setup`)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to create repo')
     } finally {
@@ -85,6 +122,28 @@ export default function NewRepo() {
                   </div>
                 </label>
               ))}
+            </div>
+
+            <hr className="divider" />
+
+            <div className="form-group" style={{ marginBottom: 20 }}>
+              <label className="label">Initialize with files from device (Optional)</label>
+              <div style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
+                <label className="btn btn-sm">
+                  Upload Folder
+                  <input type="file" hidden webkitdirectory="true" directory="true" onChange={handleFileChange} />
+                </label>
+                <label className="btn btn-sm">
+                  Upload Files
+                  <input type="file" hidden multiple onChange={handleFileChange} />
+                </label>
+              </div>
+              {selectedFiles.length > 0 && (
+                <div className="text-sm text-muted">
+                  {selectedFiles.length} file(s) selected to upload.
+                  <button type="button" onClick={() => setSelectedFiles([])} style={{ marginLeft: 8, background: 'none', border: 'none', color: 'var(--red)', cursor: 'pointer' }}>Clear</button>
+                </div>
+              )}
             </div>
 
             <div className="flex gap-8">

@@ -41,6 +41,7 @@ export const updateRepo = (id, data) => api.patch(`/repos/${id}`, data)
 export const deleteRepo = (id) => api.delete(`/repos/${id}`)
 export const getFileTree = (id, params) => api.get(`/repos/${id}/tree`, { params })
 export const getFileContent = (id, filepath, branch) => api.get(`/repos/${id}/file`, { params: { filepath, branch } })
+export const generateRepoSummary = (id, data) => api.post(`/repos/${id}/summary`, data)
 
 // Commits
 export const pushCommit = (repoId, data) => api.post(`/repos/${repoId}/commit`, data)

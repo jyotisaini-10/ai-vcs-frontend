@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import toast from 'react-hot-toast'
 import Navbar from '../components/ui/Navbar'
-import { getRepo, getCommits, pushCommit, getFileContent } from '../api'
+import { getRepo, getCommits, pushCommit, getFileContent, generateRepoSummary } from '../api'
 
 const SOCKET_URL = process.env.NODE_ENV === 'development'
   ? 'http://localhost:5000'
@@ -24,6 +24,7 @@ export default function RepoView() {
   const [branch, setBranch] = useState('main')
   const [pushing, setPushing] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [generatingSummary, setGeneratingSummary] = useState(false)
   const socketRef = useRef(null)
 
   useEffect(() => {
@@ -61,6 +62,20 @@ export default function RepoView() {
       setCurrentPath(filepath)
       setViewMode('blob')
     } catch { toast.error('Failed to load file') }
+  }
+
+  const handleGenerateSummary = async () => {
+    setGeneratingSummary(true)
+    const toastId = toast.loading('Generating AI summary...')
+    try {
+      await generateRepoSummary(id, { files: [] })
+      toast.success('AI Summary generated successfully!', { id: toastId })
+      await loadRepo(true)
+    } catch (err) {
+      toast.error('Failed to generate summary', { id: toastId })
+    } finally {
+      setGeneratingSummary(false)
+    }
   }
 
   const handlePush = async () => {
@@ -253,8 +268,9 @@ export default function RepoView() {
 
             {viewMode === 'tree' && (
               <div className="repo-tree-about-grid">
-                <div className="repo-tree-card" style={{ marginTop: 0 }}>
-                  <div className="repo-tree-header">
+                <div>
+                  <div className="repo-tree-card" style={{ marginTop: 0 }}>
+                    <div className="repo-tree-header">
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, maxWidth: '75%' }}>
                       <span style={{ fontWeight: 600, color: 'var(--text)' }}>
                         {commits[0]?.author?.username || repo?.owner?.username}
@@ -304,12 +320,27 @@ export default function RepoView() {
                     ))}
                   </div>
                 </div>
+                
+                {repo?.aiSummary && (
+                  <div className="card" style={{ marginTop: 24, padding: '20px 24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, borderBottom: '1px solid var(--border)', paddingBottom: 16 }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"/><polyline points="14 2 14 8 20 8"/><path d="M2 15h10"/><path d="M9 18l3-3-3-3"/></svg>
+                      <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>README</h2>
+                      <span className="badge badge-purple" style={{ marginLeft: 8 }}>AI Generated</span>
+                    </div>
+                    <div className="markdown-body" style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                      {repo.aiSummary}
+                    </div>
+                  </div>
+                )}
+              </div>
 
-                <div className="repo-about-panel" style={{ padding: '0 8px' }}>
-                  <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: 'var(--text)' }}>About</h2>
+              <div className="repo-about-panel" style={{ padding: '0 8px' }}>
+                <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: 'var(--text)' }}>About</h2>
                   <p style={{ fontSize: 14, color: 'var(--text2)', marginBottom: 24, lineHeight: 1.5 }}>
                     {repo?.description || 'No description provided.'}
                   </p>
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     {[
                       { icon: <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" /></svg>, label: '0 stars' },
@@ -324,6 +355,15 @@ export default function RepoView() {
                   <div style={{ borderTop: '1px solid var(--border)', marginTop: 24, paddingTop: 16 }}>
                     <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Releases</h3>
                     <p style={{ fontSize: 12, color: 'var(--text3)', marginTop: 8 }}>No releases published</p>
+                  </div>
+                  <div style={{ borderTop: '1px solid var(--border)', marginTop: 24, paddingTop: 16 }}>
+                    <button 
+                      onClick={handleGenerateSummary} 
+                      disabled={generatingSummary}
+                      className="btn btn-sm btn-primary" 
+                      style={{ width: '100%', justifyContent: 'center' }}>
+                      {generatingSummary ? <><span className="spinner" style={{ width: 14, height: 14 }} />Generating...</> : 'Generate AI Summary'}
+                    </button>
                   </div>
                 </div>
               </div>
