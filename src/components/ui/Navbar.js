@@ -91,6 +91,7 @@ const handleDiscussionsClick = () => {
     { icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 100 12A6 6 0 008 2z" stroke="currentColor" strokeWidth="1.3"/><path d="M8 6v4M8 11v.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>, label: 'Discussions', path: '/discussions' },
     { icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.3"/><path d="M5 3V2M11 3V2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>, label: 'Codespaces', path: '/codespaces' },
     { icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="1.3"/><path d="M8 2v1M8 13v1M2 8h1M13 8h1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>, label: 'Copilot', path: '/copilot' },
+    { icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v10H3V3zM5 6h6M5 9h6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>, label: 'Gists', path: '/gists' },
   ]
 
   const linkStyle = {
