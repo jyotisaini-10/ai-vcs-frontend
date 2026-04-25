@@ -83,7 +83,7 @@ export default function DiscussionsList() {
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 20 }}>
+        <div className="side-main-layout">
 
           {/* Left sidebar - categories */}
           <div>
