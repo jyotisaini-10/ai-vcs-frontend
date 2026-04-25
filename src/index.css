@@ -200,6 +200,29 @@ pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
   }
 }
 
+.copilot-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  height: calc(100vh - 56px);
+}
+@media (max-width: 768px) {
+  .copilot-layout {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .copilot-sidebar {
+    order: 2;
+    border-right: none !important;
+    border-top: 1px solid var(--border);
+  }
+  .copilot-chat {
+    height: 70vh !important;
+    order: 1;
+  }
+}
+
 /* ---- Profile 2-col ---- */
 .profile-grid-cols {
   max-width: 1100px;

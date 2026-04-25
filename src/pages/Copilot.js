@@ -183,10 +183,10 @@ export default function Copilot() {
     return (
         <div>
             <Navbar />
-            <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', height: 'calc(100vh - 56px)' }}>
+        <div className="copilot-layout">
 
                 {/* Left sidebar */}
-                <div style={{
+                <div className="copilot-sidebar" style={{
                     background: 'var(--bg2)', borderRight: '1px solid var(--border)',
                     padding: 16, display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto'
                 }}>
@@ -252,7 +252,7 @@ export default function Copilot() {
                 </div>
 
                 {/* Main chat */}
-                <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+                <div className="copilot-chat" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
 
                     {/* Chat header */}
                     <div style={{
@@ -304,7 +304,7 @@ export default function Copilot() {
                                 </div>
 
                                 {/* Bubble */}
-                                <div style={{ maxWidth: '75%' }}>
+                                <div style={{ maxWidth: msg.role === 'user' ? '85%' : '90%' }}>
                                     <div style={{
                                         fontSize: 11, color: 'var(--text3)', marginBottom: 4,
                                         textAlign: msg.role === 'user' ? 'right' : 'left'
