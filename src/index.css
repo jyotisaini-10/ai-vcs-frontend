@@ -189,6 +189,16 @@ pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
   gap: 24px;
   align-items: start;
 }
+.kanban-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 900px) {
+  .kanban-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
 
 /* ---- Profile 2-col ---- */
 .profile-grid-cols {

@@ -150,7 +150,7 @@ export default function Projects() {
         )}
 
         {/* Kanban board */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <div className="kanban-grid">
           {COLUMNS.map((col) => (
             <div key={col.key}
               onDragOver={(e) => { e.preventDefault(); setDragOver(col.key) }}
