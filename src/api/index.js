@@ -86,4 +86,9 @@ export const addReply = (repoId, discussionId, data) => api.post(`/repos/${repoI
 export const markAnswer = (repoId, discussionId, replyId) => api.patch(`/repos/${repoId}/discussions/${discussionId}/replies/${replyId}/answer`)
 export const addDiscussionComment = (repoId, id, data) => api.post(`/repos/${repoId}/discussions/${id}/comments`, data)
 
+// Gists
+export const createGist = (data) => api.post('/gists', data)
+export const getGists = () => api.get('/gists')
+export const getGist = (id) => api.get(`/gists/${id}`)
+
 export default api

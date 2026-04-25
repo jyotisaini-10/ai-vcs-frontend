@@ -30,6 +30,7 @@ const NewDiscussion    = lazy(() => import('./pages/NewDiscussion'))
 const Codespaces       = lazy(() => import('./pages/Codespaces'))
 const Copilot          = lazy(() => import('./pages/Copilot'))
 const ResetPassword    = lazy(() => import('./pages/ResetPassword'))
+const NewGist          = lazy(() => import('./pages/NewGist'))
 
 // ── Lightweight page-loading indicator ────────────────────────────────────
 function PageLoader() {
@@ -85,6 +86,7 @@ export default function App() {
           <Route path="/projects" element={<PrivateRoute><Projects /></PrivateRoute>} />
           <Route path="/codespaces" element={<PrivateRoute><Codespaces /></PrivateRoute>} />
           <Route path="/copilot" element={<PrivateRoute><Copilot /></PrivateRoute>} />
+          <Route path="/gist/new" element={<PrivateRoute><NewGist /></PrivateRoute>} />
 
           {/* Repo routes */}
           <Route path="/repo/:id"               element={<PrivateRoute><RepoView /></PrivateRoute>} />
