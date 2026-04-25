@@ -316,7 +316,7 @@ const handleDiscussionsClick = () => {
                 </div>
                 <span className="navbar-username text-sm" style={{ color: 'var(--text2)', fontWeight: 500 }}>{user.username}</span>
               </Link>
-              <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
+              <button className="btn btn-ghost btn-sm navbar-signout-btn" onClick={handleLogout}>
                 <span className="navbar-signout-text">Sign out</span>
                 <svg className="navbar-signout-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M9 2H12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9M6 10l3-3-3-3M9 7H2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>

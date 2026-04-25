@@ -316,11 +316,16 @@ pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
 
   /* Shrink search bar on mobile */
   .navbar-search {
-    width: 120px !important;
-    min-width: 90px !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    padding: 6px !important;
+    justify-content: center;
   }
-  .navbar-search .search-label { display: none; }
-  .navbar-search .search-kbd { display: none; }
+  .navbar-search .search-label,
+  .navbar-search .search-kbd { display: none !important; }
+
+  /* Hide the top-bar sign-out entirely on mobile */
+  .navbar-signout-btn { display: none !important; }
 
   /* Hide username label next to avatar */
   .navbar-username { display: none; }
@@ -420,11 +425,8 @@ pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
    RESPONSIVE — Extra Small (max-width: 400px)
    ============================================================ */
 @media (max-width: 400px) {
+  .navbar-search { width: 36px !important; min-width: 36px !important; }
   .navbar-brand span { display: none; }
-  .btn { padding: 5px 9px; font-size: 12px; }
-  .stat-row > div { flex: 1 1 100% !important; }
-  .tab { padding: 6px 8px; font-size: 11px; }
-  .navbar-search { width: 80px !important; min-width: 60px !important; }
 }
 
 /* Sign-out icon is always displayed; the text label hides on mobile */
